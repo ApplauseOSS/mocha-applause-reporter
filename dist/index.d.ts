@@ -1,4 +1,5 @@
 import { reporters, Runner } from 'mocha';
+import { TestResultStatus } from 'auto-api-client-js';
 
 declare class ApplauseReporter extends reporters.Base {
     private autoapi;
@@ -8,6 +9,8 @@ declare class ApplauseReporter extends reporters.Base {
      */
     get isSynchronised(): boolean;
     constructor(runner: Runner);
+    submitTestResult(id: string, status: TestResultStatus, errorMessage?: string): Promise<void>;
+    runnerEnd(): Promise<void>;
 }
 
 export { ApplauseReporter as default };
