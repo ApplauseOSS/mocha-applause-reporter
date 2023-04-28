@@ -1,0 +1,7 @@
+###
+# NOTE: this file is auto-generated and any changes will be overwritten
+###
+
+jobs: {}
+'on':
+- pull_request
