@@ -1,3 +1,4 @@
+import { TestRailOptions } from 'auto-api-client-js';
 /**
  * Custom Applause reporter configuration
  */
@@ -16,5 +17,5 @@ export interface ApplauseOptions {
    */
   productId: number;
 
-  groupingName: string;
+  testRail?: TestRailOptions;
 }
