@@ -22,6 +22,7 @@ export default class ApplauseReporter extends reporters.Base {
   private autoapi: AutoApi;
   private testRunId: Promise<number> = Promise.resolve(0);
   private heartbeat?: TestRunHeartbeatService;
+  private heartbeatStarted?: Promise<void>;
   private uidToResultIdMap: Record<string, Promise<number>> = {};
   private uidSubmissionMap: Record<string, Promise<void>> = {};
 
@@ -83,9 +84,7 @@ export default class ApplauseReporter extends reporters.Base {
         const runId = response.data.runId;
         console.log('Test Run %d initialized', runId);
         this.heartbeat = new TestRunHeartbeatService(runId, this.autoapi);
-
-        // Start up the TestRun heartbeat service acynchronously
-        void this.heartbeat.start();
+        this.heartbeatStarted = this.heartbeat.start();
         return runId;
       });
   }
@@ -121,7 +120,10 @@ export default class ApplauseReporter extends reporters.Base {
   }
 
   async runnerEnd(): Promise<void> {
-    // End the heartbeat if applicable
+    // Wait for the test run to be created and the heartbeat to be started
+    await this.testRunId;
+    await this.heartbeatStarted;
+    // End the heartbeat
     await this.heartbeat?.end();
     let resultIds: number[] = [];
     const valuePromises: Promise<number>[] = Object.values(

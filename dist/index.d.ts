@@ -7,6 +7,7 @@ declare class ApplauseReporter extends reporters.Base {
     private autoapi;
     private testRunId;
     private heartbeat?;
+    private heartbeatStarted?;
     private uidToResultIdMap;
     private uidSubmissionMap;
     /**

@@ -62,8 +62,7 @@ class ApplauseReporter extends reporters.Base {
             const runId = response.data.runId;
             console.log('Test Run %d initialized', runId);
             this.heartbeat = new TestRunHeartbeatService(runId, this.autoapi);
-            // Start up the TestRun heartbeat service acynchronously
-            void this.heartbeat.start();
+            this.heartbeatStarted = this.heartbeat.start();
             return runId;
         });
     }
@@ -88,7 +87,10 @@ class ApplauseReporter extends reporters.Base {
         }));
     }
     async runnerEnd() {
-        // End the heartbeat if applicable
+        // Wait for the test run to be created and the heartbeat to be started
+        await this.testRunId;
+        await this.heartbeatStarted;
+        // End the heartbeat
         await this.heartbeat?.end();
         let resultIds = [];
         const valuePromises = Object.values(this.uidToResultIdMap);
