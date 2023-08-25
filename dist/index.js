@@ -64,8 +64,7 @@ class ApplauseReporter extends mocha.reporters.Base {
             const runId = response.data.runId;
             console.log('Test Run %d initialized', runId);
             this.heartbeat = new autoApiClientJs.TestRunHeartbeatService(runId, this.autoapi);
-            // Start up the TestRun heartbeat service acynchronously
-            void this.heartbeat.start();
+            this.heartbeatStarted = this.heartbeat.start();
             return runId;
         });
     }
@@ -90,7 +89,10 @@ class ApplauseReporter extends mocha.reporters.Base {
         }));
     }
     async runnerEnd() {
-        // End the heartbeat if applicable
+        // Wait for the test run to be created and the heartbeat to be started
+        await this.testRunId;
+        await this.heartbeatStarted;
+        // End the heartbeat
         await this.heartbeat?.end();
         let resultIds = [];
         const valuePromises = Object.values(this.uidToResultIdMap);
