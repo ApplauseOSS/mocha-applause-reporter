@@ -9,7 +9,7 @@ also publishes Typescript types and sourcemaps into NPM package
 
 runs tests using Node and UVU
 
-Configured for Node 14+ . To update, change base tsconfig from "extends": "@tsconfig/node14/tsconfig.json", update "engines" section in package.json, and update .node-version file
+Configured for Node 20+ . To update, change base tsconfig from "extends": "@tsconfig/node20/tsconfig.json", update "engines" section in package.json, and update .node-version file
 
 ## Running
 
