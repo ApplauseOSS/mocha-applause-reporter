@@ -3,14 +3,13 @@
 var mocha = require('mocha');
 var applauseReporterCommon = require('applause-reporter-common');
 
-const _options = require(process.cwd() + '/applause.json');
-const options = _options;
 // import * as cli from 'mocha/lib/cli';
 class ApplauseMochaReporter extends mocha.reporters.Base {
     reporter;
     constructor(runner) {
         super(runner);
-        this.reporter = new applauseReporterCommon.ApplauseReporter(options);
+        const config = applauseReporterCommon.loadConfig();
+        this.reporter = new applauseReporterCommon.ApplauseReporter(config);
         runner.once(mocha.Runner.constants.EVENT_SUITE_BEGIN, suite => {
             // Parse each test case name from the suite
             const tests = [];

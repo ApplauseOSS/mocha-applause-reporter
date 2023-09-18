@@ -1,14 +1,12 @@
 import { reporters } from 'mocha';
 
 import {
-  ApplauseConfig,
   ApplauseReporter,
   TestResultStatus,
+  loadConfig,
 } from 'applause-reporter-common';
 import { Runner } from 'mocha';
 import { Test } from 'mocha';
-const _options = require(process.cwd() + '/applause.json');
-const options = _options as ApplauseConfig;
 
 // import * as cli from 'mocha/lib/cli';
 export default class ApplauseMochaReporter extends reporters.Base {
@@ -16,7 +14,8 @@ export default class ApplauseMochaReporter extends reporters.Base {
 
   constructor(runner: Runner) {
     super(runner);
-    this.reporter = new ApplauseReporter(options);
+    const config = loadConfig();
+    this.reporter = new ApplauseReporter(config);
 
     runner.once(Runner.constants.EVENT_SUITE_BEGIN, suite => {
       // Parse each test case name from the suite
