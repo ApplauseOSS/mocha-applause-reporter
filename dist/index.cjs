@@ -36,4 +36,4 @@ class ApplauseMochaReporter extends mocha.reporters.Base {
 }
 
 module.exports = ApplauseMochaReporter;
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=index.cjs.map
