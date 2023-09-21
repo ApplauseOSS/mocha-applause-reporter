@@ -2,13 +2,6 @@
   "extends": "@tsconfig/node20/tsconfig.json",
   "ts-node": {
     "transpileOnly": true,
-    "compilerOptions": {
-      "module": "commonjs",
-      "sourceMap": true,
-    },
-    "include": [
-      "test/**/*"
-    ],
   },
   "compilerOptions": {
     "declaration": true,
@@ -27,7 +20,7 @@
     "noUnusedParameters": true,
     "emitDeclarationOnly": true,
     "allowImportingTsExtensions": true,
-    "pretty": true
+    "pretty": true,
   },
   "include": [
     "@types/**/*",
