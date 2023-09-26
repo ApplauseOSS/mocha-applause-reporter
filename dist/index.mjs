@@ -1,9 +1,11 @@
 import { reporters, Runner } from 'mocha';
 import { loadConfig, ApplauseReporter, TestResultStatus } from 'applause-reporter-common';
 
-// import * as cli from 'mocha/lib/cli';
+const SESSION_ID_EVENT = 'applause-session-id-register';
+
 class ApplauseMochaReporter extends reporters.Base {
     reporter;
+    sessionIdMap = new Map();
     constructor(runner) {
         super(runner);
         const config = loadConfig();
@@ -19,17 +21,33 @@ class ApplauseMochaReporter extends reporters.Base {
          */
         runner
             .on(Runner.constants.EVENT_TEST_BEGIN, (testcase) => {
+            this.listenToSessionId(testcase);
             void this.reporter.startTestCase(testcase.id, testcase.fullTitle());
         })
             .on(Runner.constants.EVENT_TEST_PASS, (testcase) => {
-            void this.reporter.submitTestCaseResult(testcase.id, TestResultStatus.PASSED);
+            void this.reporter.submitTestCaseResult(testcase.id, TestResultStatus.PASSED, { providerSessionGuids: this.sessionIdMap.get(testcase.id) || [] });
+        })
+            .on(Runner.constants.EVENT_TEST_PENDING, (testcase) => {
+            void this.reporter.submitTestCaseResult(testcase.id, TestResultStatus.SKIPPED, { providerSessionGuids: this.sessionIdMap.get(testcase.id) || [] });
         })
             .on(Runner.constants.EVENT_TEST_FAIL, (testcase, error) => {
-            void this.reporter.submitTestCaseResult(testcase.id, TestResultStatus.FAILED, { failureReason: error.message });
+            void this.reporter.submitTestCaseResult(testcase.id, TestResultStatus.FAILED, {
+                failureReason: error.message,
+                providerSessionGuids: this.sessionIdMap.get(testcase.id) || [],
+            });
         })
             .once(Runner.constants.EVENT_RUN_END, () => {
             void this.reporter.runnerEnd();
         });
+    }
+    recordSessionId(id, sessionId) {
+        this.sessionIdMap.set(id, [
+            ...(this.sessionIdMap.get(id) || []),
+            sessionId,
+        ]);
+    }
+    listenToSessionId(test) {
+        test.on(SESSION_ID_EVENT, (sessionId) => this.recordSessionId(test.id, sessionId));
     }
 }
 

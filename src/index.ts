@@ -7,10 +7,11 @@ import {
 } from 'applause-reporter-common';
 import { Runner } from 'mocha';
 import { Test } from 'mocha';
+import { SESSION_ID_EVENT } from './hooks.ts';
 
-// import * as cli from 'mocha/lib/cli';
 export default class ApplauseMochaReporter extends reporters.Base {
   private reporter: ApplauseReporter;
+  private sessionIdMap: Map<string, string[]> = new Map();
 
   constructor(runner: Runner) {
     super(runner);
@@ -28,23 +29,48 @@ export default class ApplauseMochaReporter extends reporters.Base {
      */
     runner
       .on(Runner.constants.EVENT_TEST_BEGIN, (testcase: Test) => {
+        this.listenToSessionId(testcase);
         void this.reporter.startTestCase(testcase.id, testcase.fullTitle());
       })
       .on(Runner.constants.EVENT_TEST_PASS, (testcase: Test) => {
         void this.reporter.submitTestCaseResult(
           testcase.id,
-          TestResultStatus.PASSED
+          TestResultStatus.PASSED,
+          { providerSessionGuids: this.sessionIdMap.get(testcase.id) || [] }
+        );
+      })
+      .on(Runner.constants.EVENT_TEST_PENDING, (testcase: Test) => {
+        void this.reporter.submitTestCaseResult(
+          testcase.id,
+          TestResultStatus.SKIPPED,
+          { providerSessionGuids: this.sessionIdMap.get(testcase.id) || [] }
         );
       })
       .on(Runner.constants.EVENT_TEST_FAIL, (testcase: Test, error: Error) => {
         void this.reporter.submitTestCaseResult(
           testcase.id,
           TestResultStatus.FAILED,
-          { failureReason: error.message }
+          {
+            failureReason: error.message,
+            providerSessionGuids: this.sessionIdMap.get(testcase.id) || [],
+          }
         );
       })
       .once(Runner.constants.EVENT_RUN_END, () => {
         void this.reporter.runnerEnd();
       });
+  }
+
+  private recordSessionId(id: string, sessionId: string) {
+    this.sessionIdMap.set(id, [
+      ...(this.sessionIdMap.get(id) || []),
+      sessionId,
+    ]);
+  }
+
+  private listenToSessionId(test: Test): void {
+    test.on(SESSION_ID_EVENT, (sessionId: string) =>
+      this.recordSessionId(test.id, sessionId)
+    );
   }
 }
