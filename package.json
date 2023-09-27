@@ -19,6 +19,11 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
+    "./hooks": {
+      "import": "./dist/hooks.mjs",
+      "require": "./dist/hooks.cjs",
+      "types": "./dist/hooks.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "engines": {

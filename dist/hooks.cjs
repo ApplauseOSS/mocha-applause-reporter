@@ -17,10 +17,10 @@ function registerSessionId(sessionId) {
     // this: Mocha.Context can be executed for either a Hook for a test. If this is being executed for a Hook,
     // we want to emit the event on the currentTest, not the test (which is actually the hook)
     if (this.test instanceof mocha.Test) {
-        this.test?.emit(SESSION_ID_EVENT, JSON.stringify({ fullTitle: this.test?.fullTitle(), sessionId }));
+        this.test?.emit(SESSION_ID_EVENT, sessionId);
     }
     else if (this.test instanceof mocha.Hook && this.currentTest instanceof mocha.Test) {
-        this.currentTest?.emit(SESSION_ID_EVENT, JSON.stringify({ fullTitle: this.currentTest?.fullTitle(), sessionId }));
+        this.currentTest?.emit(SESSION_ID_EVENT, sessionId);
     }
 }
 
