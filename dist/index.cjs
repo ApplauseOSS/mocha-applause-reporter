@@ -1,9 +1,31 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 var mocha = require('mocha');
 var applauseReporterCommon = require('applause-reporter-common');
 
 const SESSION_ID_EVENT = 'applause-session-id-register';
+function registerSessionIdHook(sessionIdLookup) {
+    return function () {
+        if (this.test instanceof mocha.Hook &&
+            !this.test.title.startsWith('"before each"')) {
+            console.warn('Can only register session id in the beforeEach hook');
+            return;
+        }
+        registerSessionId.apply(this, [sessionIdLookup()]);
+    };
+}
+function registerSessionId(sessionId) {
+    // this: Mocha.Context can be executed for either a Hook for a test. If this is being executed for a Hook,
+    // we want to emit the event on the currentTest, not the test (which is actually the hook)
+    if (this.test instanceof mocha.Test) {
+        this.test?.emit(SESSION_ID_EVENT, sessionId);
+    }
+    else if (this.test instanceof mocha.Hook && this.currentTest instanceof mocha.Test) {
+        this.currentTest?.emit(SESSION_ID_EVENT, sessionId);
+    }
+}
 
 class ApplauseMochaReporter extends mocha.reporters.Base {
     reporter;
@@ -53,5 +75,8 @@ class ApplauseMochaReporter extends mocha.reporters.Base {
     }
 }
 
-module.exports = ApplauseMochaReporter;
+exports.SESSION_ID_EVENT = SESSION_ID_EVENT;
+exports.default = ApplauseMochaReporter;
+exports.registerSessionId = registerSessionId;
+exports.registerSessionIdHook = registerSessionIdHook;
 //# sourceMappingURL=index.cjs.map
