@@ -74,5 +74,3 @@ export default class ApplauseMochaReporter extends reporters.Base {
     );
   }
 }
-
-export * from './hooks.ts';
