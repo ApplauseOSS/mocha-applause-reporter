@@ -58,9 +58,9 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.0.0",
     "prettier": "^3.0.3",
-    "rollup": "3.29.1",
+    "rollup": "3.29.4",
     "rollup-plugin-dts": "^6.0.2",
-    "ts-node": "10.9.1",
+    "ts-node": "10.9.2",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "yarn": "^1.22.19"
