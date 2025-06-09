@@ -65,6 +65,6 @@
   },
   "dependencies": {
     "applause-reporter-common": "https://github.com/ApplauseOSS/applause-reporter-common#master",
-    "mocha": "^10.7.3"
+    "mocha": "^11.6.0"
   }
 }
